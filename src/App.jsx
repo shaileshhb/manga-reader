@@ -275,9 +275,12 @@ export default function App() {
 
   if (showLibrary) {
     return (
-      <div className={`min-h-screen transition-colors ${darkMode ? 'bg-gray-950' : 'bg-gradient-to-br from-indigo-50 via-white to-purple-50'}`}>
-        {/* Header */}
-        <div className="fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-white/80 dark:bg-gray-900/80 border-b border-gray-200 dark:border-gray-800">
+      <div className={`min-h-screen transition-colors ${darkMode ? 'bg-gray-950' : 'bg-gradient-to-br from-indigo-50 via-white to-purple-50'}`}
+           onDrop={handleDrop}
+           onDragOver={handleDragOver}
+           onDragLeave={handleDragLeave}>
+        {/* Header - Fixed navbar color to match background */}
+        <div className="fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-white/80 dark:bg-gray-950/80 border-b border-gray-200/50 dark:border-gray-800/50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex justify-between items-center">
               <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -395,30 +398,25 @@ export default function App() {
               </div>
             </div>
 
-            {/* Upload Zone */}
-            <div
-              className={`relative rounded-2xl p-12 text-center transition-all border-2 ${
-                dragOver
-                  ? darkMode
-                    ? 'border-blue-500 bg-blue-500/10'
-                    : 'border-blue-400 bg-blue-50'
-                  : darkMode
-                  ? 'border-gray-700 bg-gray-900/50'
-                  : 'border-gray-200 bg-white shadow-xl'
-              }`}
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-            >
+            {/* Start Reading Section - Replaces Upload Zone */}
+            <div className={`rounded-2xl p-12 text-center transition-all ${
+              dragOver
+                ? darkMode
+                  ? 'border-2 border-blue-500 bg-blue-500/10'
+                  : 'border-2 border-blue-400 bg-blue-50'
+                : darkMode
+                ? 'bg-gray-900'
+                : 'bg-white shadow-xl'
+            }`}>
               <div className="mb-6">
                 <div className="text-6xl mb-4">📖</div>
-                <h2 className={`text-2xl font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                <h2 className={`text-3xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   Start Reading Now
                 </h2>
-                <p className={`text-sm mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Drag and drop your .cbz file here, or click to browse
+                <p className={`text-lg mb-6 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Upload your CBZ file to begin reading
                 </p>
-                <p className={`text-xs ${darkMode ? 'text-amber-400' : 'text-amber-600'}`}>
+                <p className={`text-sm ${darkMode ? 'text-amber-400' : 'text-amber-600'}`}>
                   ⚠️ Files are processed locally in your browser and not permanently stored
                 </p>
               </div>
@@ -434,7 +432,7 @@ export default function App() {
               />
               <label
                 htmlFor="fileInput"
-                className={`inline-block px-8 py-4 rounded-xl cursor-pointer transition-all transform hover:scale-105 shadow-lg ${
+                className={`inline-block px-8 py-4 rounded-xl cursor-pointer transition-all transform hover:scale-105 shadow-lg text-lg font-medium ${
                   darkMode
                     ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white'
                     : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white'
