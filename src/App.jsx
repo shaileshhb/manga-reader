@@ -37,6 +37,8 @@ export default function App() {
   const imageRef = useRef(null);
   const controlsTimeoutRef = useRef(null);
   const readerRef = useRef(null);
+  const touchStartRef = useRef({ x: 0, y: 0, time: 0 });
+  const touchMovedRef = useRef(false);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -183,6 +185,56 @@ export default function App() {
     } else {
       setShowControls(!showControls);
       resetControlsTimeout();
+    }
+  };
+
+  const onTouchStart = (e) => {
+    if (e.touches && e.touches.length === 1) {
+      const t = e.touches[0];
+      touchStartRef.current = { x: t.clientX, y: t.clientY, time: Date.now() };
+      touchMovedRef.current = false;
+    }
+  };
+
+  const onTouchMove = (e) => {
+    if (!touchStartRef.current) return;
+    const t = e.touches[0];
+    const dx = Math.abs(t.clientX - touchStartRef.current.x);
+    const dy = Math.abs(t.clientY - touchStartRef.current.y);
+    if (dx > 10 || dy > 10) touchMovedRef.current = true;
+  };
+
+  const onTouchEnd = (e) => {
+    const start = touchStartRef.current;
+    if (!start) return;
+    const t = e.changedTouches && e.changedTouches[0];
+    if (!t) return;
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    const dt = Date.now() - start.time;
+    const isHorizontal = Math.abs(dx) > Math.abs(dy);
+    const isSwipe = isHorizontal && Math.abs(dx) > 50 && dt < 600;
+    if (isSwipe) {
+      if (dx < 0) {
+        nextPage();
+      } else {
+        prevPage();
+      }
+      resetControlsTimeout();
+      return;
+    }
+    if (!touchMovedRef.current) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const clickX = t.clientX - rect.left;
+      const clickPos = clickX / rect.width;
+      if (clickPos > 0.7) {
+        nextPage();
+      } else if (clickPos < 0.3) {
+        prevPage();
+      } else {
+        setShowControls(!showControls);
+        resetControlsTimeout();
+      }
     }
   };
 
@@ -438,25 +490,30 @@ export default function App() {
       className="fixed inset-0 bg-black"
       onMouseMove={resetControlsTimeout}
       onClick={handlePageClick}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
     >
       <div 
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           showControls ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
         }`}
       >
-        <div className="bg-gradient-to-b from-black via-black/90 to-transparent px-4 py-3 border-b-2 border-red-600">
+        <div className="bg-gradient-to-b from-black via-black/90 to-transparent px-3 sm:px-4 py-2 sm:py-3 border-b-2 border-red-600" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
           <div className="flex items-center justify-between">
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 setShowLibrary(true);
               }}
-              className="px-4 py-2 bg-red-600 hover:bg-red-500 rounded-lg text-white font-bold transition-all border-2 border-white transform hover:scale-105"
+              className="px-3 py-2 sm:px-4 sm:py-2 bg-red-600 hover:bg-red-500 rounded-lg text-white font-bold transition-all border border-white/80 sm:border-2 transform hover:scale-105 text-sm sm:text-base"
             >
-              ← LIBRARY
+              <span className="mr-1">←</span>
+              <span className="hidden sm:inline">LIBRARY</span>
+              <span className="sm:hidden">Back</span>
             </button>
             
-            <h2 className="text-white text-lg font-bold truncate max-w-xs mx-4 tracking-wide">
+            <h2 className="text-white text-base sm:text-lg font-bold truncate max-w-[50vw] sm:max-w-xs mx-2 sm:mx-4 tracking-wide">
               {currentManga?.name}
             </h2>
             
@@ -466,7 +523,7 @@ export default function App() {
                   e.stopPropagation();
                   setViewMode(viewMode === 'single' ? 'double' : 'single');
                 }}
-                className="px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-white transition-all border-2 border-gray-600"
+                className="px-2 py-2 sm:px-3 bg-gray-800 hover:bg-gray-700 rounded-lg text-white transition-all border border-gray-600 sm:border-2 text-sm sm:text-base"
                 title={viewMode === 'single' ? 'Double Page' : 'Single Page'}
               >
                 {viewMode === 'single' ? '📄' : '📖'}
@@ -476,7 +533,7 @@ export default function App() {
                   e.stopPropagation();
                   toggleFullscreen();
                 }}
-                className="px-3 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-white transition-all border-2 border-gray-600"
+                className="px-2 py-2 sm:px-3 bg-gray-800 hover:bg-gray-700 rounded-lg text-white transition-all border border-gray-600 sm:border-2 text-sm sm:text-base"
               >
                 {isFullscreen ? '⊡' : '⛶'}
               </button>
@@ -485,7 +542,7 @@ export default function App() {
         </div>
       </div>
 
-      <div className={`fixed left-4 top-1/2 -translate-y-1/2 z-40 transition-opacity duration-300 ${
+      <div className={`hidden md:block fixed left-4 top-1/2 -translate-y-1/2 z-40 transition-opacity duration-300 ${
         currentPage > 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'
       }`}>
         <button
@@ -501,7 +558,7 @@ export default function App() {
         </button>
       </div>
       
-      <div className={`fixed right-4 top-1/2 -translate-y-1/2 z-40 transition-opacity duration-300 ${
+      <div className={`hidden md:block fixed right-4 top-1/2 -translate-y-1/2 z-40 transition-opacity duration-300 ${
         currentPage < pages.length - 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'
       }`}>
         <button
@@ -564,21 +621,21 @@ export default function App() {
           showControls ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
         }`}
       >
-        <div className="bg-gradient-to-t from-black via-black/90 to-transparent px-4 py-4 border-t-2 border-red-600">
-          <div className="flex items-center justify-between max-w-4xl mx-auto">
-            <div className="flex items-center gap-3">
+        <div className="bg-gradient-to-t from-black via-black/90 to-transparent px-3 sm:px-4 py-3 sm:py-4 border-t-2 border-red-600" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+          <div className="flex items-center justify-between max-w-4xl mx-auto gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setZoom(Math.max(0.5, zoom - 0.25));
                 }}
-                className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-white transition-all border-2 border-gray-600"
+                className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-white transition-all border border-gray-600 sm:border-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
                 </svg>
               </button>
-              <span className="text-white font-bold text-sm bg-gray-800 px-3 py-1 rounded-lg border-2 border-gray-600">
+              <span className="text-white font-bold text-xs sm:text-sm bg-gray-800 px-2 sm:px-3 py-1 rounded-lg border border-gray-600 sm:border-2">
                 {Math.round(zoom * 100)}%
               </span>
               <button
@@ -586,7 +643,7 @@ export default function App() {
                   e.stopPropagation();
                   setZoom(Math.min(3, zoom + 0.25));
                 }}
-                className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-white transition-all border-2 border-gray-600"
+                className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-white transition-all border border-gray-600 sm:border-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
@@ -594,14 +651,27 @@ export default function App() {
               </button>
             </div>
             
-            <div className="flex items-center gap-3">
-              <div className="w-32 h-2 bg-gray-800 rounded-full overflow-hidden border-2 border-gray-600">
-                <div 
-                  className="h-full bg-gradient-to-r from-red-600 to-red-400 transition-all duration-300"
-                  style={{ width: `${((currentPage + 1) / pages.length) * 100}%` }}
-                ></div>
-              </div>
-              <span className="text-white font-bold text-sm whitespace-nowrap bg-gray-800 px-3 py-1 rounded-lg border-2 border-gray-600">
+            <div className="flex items-center gap-3 flex-1 justify-end">
+              <input
+                type="range"
+                min={1}
+                max={Math.max(1, pages.length)}
+                value={Math.min(pages.length, currentPage + 1)}
+                onChange={(e) => {
+                  const page = Number(e.target.value) - 1;
+                  setCurrentPage(page);
+                  if (currentManga) {
+                    setProgress(prev => ({
+                      ...prev,
+                      [currentManga.id]: { currentPage: page, lastRead: Date.now() }
+                    }));
+                  }
+                  resetControlsTimeout();
+                }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-32 sm:w-48 h-2 accent-red-600 bg-gray-800 rounded-lg appearance-none"
+              />
+              <span className="text-white font-bold text-xs sm:text-sm whitespace-nowrap bg-gray-800 px-2 sm:px-3 py-1 rounded-lg border border-gray-600 sm:border-2">
                 {currentPage + 1}/{pages.length}
               </span>
             </div>
