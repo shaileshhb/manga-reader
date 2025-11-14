@@ -1,4 +1,6 @@
 /* Global base styles (ported from React app; Tailwind directives removed) */
+@use './styles/vars' as *;
+
 html {
   scroll-behavior: smooth;
   overscroll-behavior: none;

@@ -1,14 +1,11 @@
 import { Injectable, computed, effect, signal } from '@angular/core';
 import { LocalStorageService } from '../services/local-storage.service';
+import { STORAGE_KEYS } from '../constants';
 
 export interface User {
   id: string;
   name: string;
 }
-
-const STORAGE_KEYS = {
-  AUTH_USER: 'auth:user',
-} as const;
 
 @Injectable({ providedIn: 'root' })
 export class AuthStore {
