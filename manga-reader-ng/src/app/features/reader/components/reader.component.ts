@@ -50,7 +50,7 @@ import { ReaderStore } from '../stores/reader.store';
             <button class="btn" (click)="zoomIn($event)">+</button>
           </div>
           <div class="progress">
-            <input type="range" [min]="1" [max]="Math.max(1, store.pages().length)" [value]="Math.min(store.pages().length, store.currentPage() + 1)" (click)="$event.stopPropagation()" (input)="onSeek($event)" />
+            <input type="range" [min]="1" [max]="totalPages" [value]="currentPageDisplay" (click)="$event.stopPropagation()" (input)="onSeek($event)" />
             <span class="pill">{{ store.currentPage() + 1 }}/{{ store.pages().length }}</span>
           </div>
         </div>
@@ -94,6 +94,13 @@ import { ReaderStore } from '../stores/reader.store';
 export class ReaderComponent {
   store = inject(ReaderStore);
   @ViewChild('image') imageRef?: ElementRef<HTMLImageElement>;
+
+  get totalPages(): number {
+    return Math.max(1, this.store.pages().length);
+  }
+  get currentPageDisplay(): number {
+    return Math.min(this.store.pages().length, this.store.currentPage() + 1);
+  }
 
   onMouseMove() {
     this.store.showControls.set(true);
