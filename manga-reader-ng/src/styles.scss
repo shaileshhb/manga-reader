@@ -1,1 +1,51 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global base styles (ported from React app; Tailwind directives removed) */
+html {
+  scroll-behavior: smooth;
+  overscroll-behavior: none;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.manga-page {
+  transition: transform 0.3s ease;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.manga-page:active {
+  cursor: grabbing;
+}
+
+.zoom-controls {
+  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.progress-bar {
+  transition: width 0.3s ease;
+}
+
+.file-drop-zone {
+  border: 2px dashed #64748b;
+  transition: all 0.3s ease;
+}
+
+.file-drop-zone.drag-over {
+  border-color: #3b82f6;
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.manga-library-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
