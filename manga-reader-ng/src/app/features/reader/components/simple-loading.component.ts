@@ -1,0 +1,35 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-simple-loading',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <div class="overlay">
+      <div class="spinner"></div>
+      <div class="label">
+        <div>読み込み中...</div>
+        <div class="muted">Loading...</div>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+      display: flex; align-items: center; justify-content: center; z-index: 50;
+      backdrop-filter: blur(4px);
+    }
+    .spinner {
+      width: 64px; height: 64px; border-radius: 50%;
+      border: 4px solid rgba(239,68,68,0.3); border-top-color: #ef4444;
+      animation: spin 1s linear infinite; margin: 0 auto 12px;
+    }
+    .label { text-align: center; color: #fff; font-weight: 700; }
+    .label .muted { color: #f87171; font-size: 12px; margin-top: 4px; font-weight: 400; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  `],
+})
+export class SimpleLoadingComponent {}
+
+
