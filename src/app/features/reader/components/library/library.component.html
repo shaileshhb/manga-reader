@@ -1,0 +1,44 @@
+<div class="library" (drop)="onDrop($event)" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)">
+  <div class="topbar">
+    <div class="wrap">
+      <div class="brand">
+        <div class="logo">漫</div>
+        <div class="titles">
+          <h1>MANGA READER</h1>
+          <p>マンガリーダー</p>
+        </div>
+      </div>
+      <button class="btn" (click)="toggleDark()">{{ store.darkMode() ? '☀️' : '🌙' }}</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="drop" [class.drag]="store.dragOver()">
+      <div class="emoji">📖</div>
+      <h2>START READING!</h2>
+      <p class="muted">Drop your CBZ file or click to browse</p>
+      <label class="choose">
+        <input type="file" accept=".cbz" (change)="onFile($event)" hidden />
+        <span>CHOOSE FILE</span>
+      </label>
+    </div>
+
+    <div class="library-list" *ngIf="store.mangaList().length > 0">
+      <h3>YOUR LIBRARY</h3>
+      <div class="grid">
+        <div class="item" *ngFor="let manga of store.mangaList(); track manga.id" (click)="openManga(manga.id)">
+          <div class="icon">📚</div>
+          <div class="meta">
+            <div class="name">{{ manga.name }}</div>
+            <div class="sub">
+              <span>{{ manga.pages }} pages</span>
+            </div>
+          </div>
+          <button class="del" (click)="remove(manga.id, $event)">✕</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-simple-loading *ngIf="store.loading()" />
+</div>

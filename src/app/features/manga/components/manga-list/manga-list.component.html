@@ -1,0 +1,28 @@
+<div *ngIf="loading()" class="padded center muted">Loading manga…</div>
+<div *ngIf="error()" class="padded center">
+  <p class="error">Unable to load manga right now.</p>
+  <button type="button" (click)="reload()">Retry</button>
+</div>
+<div
+  *ngIf="!loading() && !error() && !items().length"
+  class="padded center muted"
+>
+  No manga available.
+</div>
+<div *ngIf="!loading() && !error() && items().length" class="grid">
+  <div class="card" *ngFor="let item of items(); track: item.id">
+    <h3 [title]="item.name">{{ item.name }}</h3>
+    <div class="meta">
+      <span>{{ item.size || 0 | number }} bytes</span>
+    </div>
+    <div class="actions">
+      <a
+        [href]="item.readUrl || readUrl(item)"
+        target="_blank"
+        rel="noopener noreferrer"
+        >Read</a
+      >
+      <a [href]="item.downloadUrl || downloadUrl(item)">Download</a>
+    </div>
+  </div>
+</div>

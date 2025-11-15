@@ -1,0 +1,66 @@
+.padded {
+  padding: 16px;
+}
+.center {
+  text-align: center;
+}
+.muted {
+  color: #9ca3af;
+}
+.error {
+  color: #ef4444;
+  margin-bottom: 8px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 16px;
+  padding: 16px;
+}
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.card {
+  border: 1px solid #404040;
+  border-radius: 12px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+}
+h3 {
+  margin: 0;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.meta {
+  margin-top: 4px;
+  color: #9ca3af;
+  font-size: 12px;
+}
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.actions a {
+  padding: 6px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #fff;
+  background: #1f2937;
+}
+.actions a:last-child {
+  background: #dc2626;
+}
+.actions a:last-child:hover {
+  background: #ef4444;
+}

@@ -1,0 +1,59 @@
+<div class="reader" (mousemove)="onMouseMove()" (click)="onClick($event)">
+  <div class="topbar" [class.hidden]="!store.showControls()">
+    <div class="row">
+      <button class="btn back" (click)="back($event)">
+        ← <span class="d-sm">Library</span>
+      </button>
+      <h2 class="title">{{ store.currentManga()?.name }}</h2>
+      <div class="actions">
+        <button class="btn" (click)="toggleView($event)">
+          {{ store.viewMode() === "single" ? "📄" : "📖" }}
+        </button>
+        <button class="btn" (click)="toggleFullscreen($event)">
+          {{ store.isFullscreen() ? "⊡" : "⛶" }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav left" [class.disabled]="store.currentPage() <= 0">
+    <button class="btn circle" (click)="prev($event)">‹</button>
+  </div>
+  <div class="nav right" [class.disabled]="store.currentPage() >= store.pages().length - 1">
+    <button class="btn circle" (click)="next($event)">›</button>
+  </div>
+
+  <div class="stage">
+    <div class="stage-inner">
+      <ng-container *ngIf="store.viewMode() === 'single'; else doubleView">
+        <div class="page">
+          <img #image [src]="store.pages()[store.currentPage()].url" [alt]="'Page ' + (store.currentPage() + 1)"
+            [style.transform]="'scale(' + store.zoom() + ')'" draggable="false" />
+        </div>
+      </ng-container>
+      <ng-template #doubleView>
+        <div class="page double">
+          <img *ngIf="store.currentPage() > 0" [src]="store.pages()[store.currentPage() - 1].url"
+            [alt]="'Page ' + store.currentPage()" draggable="false" />
+          <img [src]="store.pages()[store.currentPage()].url" [alt]="'Page ' + (store.currentPage() + 1)"
+            draggable="false" />
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <div class="bottombar" [class.hidden]="!store.showControls()">
+    <div class="row">
+      <div class="zoom">
+        <button class="btn" (click)="zoomOut($event)">-</button>
+        <span class="pill">{{ store.zoom() * 100 | number : "1.0-0" }}%</span>
+        <button class="btn" (click)="zoomIn($event)">+</button>
+      </div>
+      <div class="progress">
+        <input type="range" [min]="1" [max]="totalPages" [value]="currentPageDisplay" (click)="$event.stopPropagation()"
+          (input)="onSeek($event)" />
+        <span class="pill">{{ store.currentPage() + 1 }}/{{ store.pages().length }}</span>
+      </div>
+    </div>
+  </div>
+</div>
